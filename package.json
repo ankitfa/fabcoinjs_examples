@@ -1,0 +1,26 @@
+{
+  "name": "fabcoinjs_examples",
+  "version": "1.0.0",
+  "description": "A set of examples for using fabcoinjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ankitfa/fabcoinjs_examples.git"
+  },
+  "keywords": [
+    "fabcoinjs",
+    "fabcoin"
+  ],
+  "author": "Ankit Shah",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ankitfa/fabcoinjs_examples/issues"
+  },
+  "homepage": "https://github.com/ankitfa/fabcoinjs_examples#readme",
+  "dependencies": {
+    "fabcoinjs": "^1.0.1"
+  }
+}
