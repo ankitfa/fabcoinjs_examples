@@ -121,7 +121,7 @@ var getUtxosForMnemonic = async function (mnemonics,apiEndPoint) {
         //internalAddressUnusedCount++
         let addressArray = []
         let mUrl = ApiEndPoint + apiUtxo
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 100; i++) {
             let ad = internalHDNode.derive(internalAddressIndex)
             let address = payments.p2pkh({ pubkey: ad.publicKey, network: networks.fabcoin }).address
             // console.log(address)
@@ -190,7 +190,7 @@ var getUtxosForMnemonic = async function (mnemonics,apiEndPoint) {
 
         let addressArray = []
         let mUrl = ApiEndPoint + apiUtxo
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 100; i++) {
             let ad = externalHDNode.derive(externalAddressIndex)
             let address = payments.p2pkh({ pubkey: ad.publicKey, network: networks.fabcoin }).address
             // console.log(address)
@@ -309,8 +309,13 @@ var getRawTransaction = async function (txid) {
  * @returns true if the address has ever been used in the blockchain, false otherwise
  */
 var isAddressUsed = async function (address) {
-    let r = await axios.default.get('http://fabexplorer.info' + apiExistAddress + address)
-    return r.data
+    let r = await axios.default.get('http://fabexplorer.info' + apiExistAddress + address).then(res => {
+        return res.data
+    }).catch (e => {
+        return e
+    })
+ 
+    return r
 }
 
 /**

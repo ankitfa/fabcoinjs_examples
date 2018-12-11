@@ -20,14 +20,6 @@ async function test() {
     console.dir(transaction)
     console.log('-'.repeat(30)+'\n\n')
     
-
-    //This function can be used to check the balance with only mnemonics available
-    //To check your own balance, you can supply mnemonic words within this function as an argument
-    let balance = await func.getBalanceForMnemonics(mnemonicsForTesting,apiEndPoint)
-    console.log("Balance : "+balance) 
 }
 
-
-
 test()
-
