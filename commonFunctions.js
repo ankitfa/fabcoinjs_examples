@@ -20,13 +20,6 @@ const apiGetTokenList = ":9001/fabapi/gettokenlist"
 const myApiEndPoint = 'http://fabexplorer.com' // api to be changed later
 
 
-
-//This function can be used to check the api status 
-fabcoinjs.checkAPIStatus('http://fabexplorer.com').then(res => {
-    console.log(res)
-})
-
-
 class UtxoObject {
     constructor(txId, txIdx, value, address, keypair) {
         this.TxId = txId
@@ -99,7 +92,7 @@ var checkAPIStatus = async function (apiEndPoint) {
 
 var getBalanceForMnemonics = async function (mnemonics, apiEndPoint) {
 
-    let utxos = await getUtxosForMnemonic(mnemonics)
+    let utxos = await getUtxosForMnemonic(mnemonics,apiEndPoint)
     let value = 0
     utxos.forEach((utxo) => {
         value += utxo.value
@@ -108,8 +101,9 @@ var getBalanceForMnemonics = async function (mnemonics, apiEndPoint) {
 
 }
 
-var getUtxosForMnemonic = async function (mnemonics) {
+var getUtxosForMnemonic = async function (mnemonics,apiEndPoint) {
 
+    let ApiEndPoint = (apiEndPoint) ? apiEndPoint : myApiEndPoint
     let myUtxo = []
     let mn = bip39.mnemonicToSeed(mnemonics)
     mnemonics = '************************************************************************'
@@ -126,7 +120,7 @@ var getUtxosForMnemonic = async function (mnemonics) {
     while (internalAddressUnusedCount < 10) {
         //internalAddressUnusedCount++
         let addressArray = []
-        let mUrl = myApiEndPoint + apiUtxo
+        let mUrl = ApiEndPoint + apiUtxo
         for (let i = 0; i < 10; i++) {
             let ad = internalHDNode.derive(internalAddressIndex)
             let address = payments.p2pkh({ pubkey: ad.publicKey, network: networks.fabcoin }).address
@@ -195,7 +189,7 @@ var getUtxosForMnemonic = async function (mnemonics) {
     while (externalAddressUnusedCount < 10) {
 
         let addressArray = []
-        let mUrl = myApiEndPoint + apiUtxo
+        let mUrl = ApiEndPoint + apiUtxo
         for (let i = 0; i < 10; i++) {
             let ad = externalHDNode.derive(externalAddressIndex)
             let address = payments.p2pkh({ pubkey: ad.publicKey, network: networks.fabcoin }).address
@@ -280,6 +274,11 @@ var replaceConsoleMessage = function (msg) {
     process.stdout.write(msg)
 }
 
+/**
+ * 
+ * @param {string} txid Transaction ID
+ * @returns number of confirmations for a valid transaction 
+ */
 var getTransactionConfirmations = async function (txid) {
     let cnf = await axios.default.get(myApiEndPoint + apiGetTx + txid + '/true').then(res => {
         return res.data.confirmations
@@ -290,6 +289,11 @@ var getTransactionConfirmations = async function (txid) {
     return cnf
 }
 
+/**
+ * 
+ * @param {string} txid Transaction ID
+ * @returns Raw Transaction in JSON format for the given valid transaction ID 
+ */
 var getRawTransaction = async function (txid) {
     let res = await axios.default.get(myApiEndPoint + apiGetTx + txid + '/true').then(res => {
         return res.data
