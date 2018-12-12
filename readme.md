@@ -18,4 +18,4 @@ Following examples are currently avilable. We will continue to add more examples
 |-
 |[checkApiStatus.js](examples/checkapistatus.js)
 |To check if the API is currently working as expected or not.
-}
+|}
