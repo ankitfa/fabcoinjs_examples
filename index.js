@@ -1,9 +1,17 @@
 const func = require('./commonFunctions')
 const apiEndPoint = 'http://fabexplorer.com'
+const fs = require('fs')
 const mnemonicsForTesting = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong'
 const transactionID = 'f15365693b269f650b2042bc7b22ac70c0ec24889ba6fee7d7e40d18a3716d7b'
 
 async function test() {
+
+    fs.writeFileSync('log.txt','testing\n')
+    for(let i = 0; i < 100; i++)
+        fs.appendFileSync('log.txt','testing '+i+'\n')
+        
+    return
+
     let apiStatus =  await func.checkAPIStatus(apiEndPoint)
     console.log("API Status : "+ ((apiStatus) ? "API Ok" : "API Broken"))
     if(!apiStatus) {

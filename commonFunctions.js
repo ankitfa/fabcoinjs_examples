@@ -3,6 +3,7 @@ const bip39 = require('bip39')
 const bip32 = require('bip32')
 const web3 = require('web3-eth-abi')
 const axios = require('axios')
+const fs = require('fs')
 
 const script = fabcoinjs.script
 const networks = fabcoinjs.networks
@@ -18,6 +19,7 @@ const apiCallContract = ":9001/fabapi/callcontract"
 const apiBlockchainInfo = ":9001/fabapi/getblockchaininfo"
 const apiGetTokenList = ":9001/fabapi/gettokenlist"
 const myApiEndPoint = 'http://fabexplorer.com' // api to be changed later
+
 
 
 class UtxoObject {
@@ -36,6 +38,15 @@ class Wallet {
         this.UTXO = null
     }
 }
+
+var writeToLogFile = function(message) {
+    fs.writeFileSync('log.txt', message + '\n')
+}
+
+var addToLogFile = function(message) {
+    fs.appendFileSync('log.txt', message + '\n')
+}
+
 
 /**
  * @param {string} mnemonics A valid 12 word bip39 compliant mnemonic
@@ -71,21 +82,27 @@ var getKeyPair = function (mnemonics, account, chainType, addressIndex) {
  */
 var checkAPIStatus = async function (apiEndPoint) {
     // generate a random address
+    writeToLogFile('checking API at '+ apiEndPoint)
     let mn = bip39.mnemonicToSeed('')
     let ad = bip32.fromSeed(mn, networks.fabcoin).derivePath('m/44/0\'/0\'/1')
     let address = payments.p2pkh({ pubkey: ad.publicKey, network: networks.fabcoin }).address
+    addToLogFile('Test Address Generated : '+address)
     let res = await axios.get(apiEndPoint + apiExistAddress + address)
         .then(function (response) {
             let r = false
             if (typeof (response.data) === 'boolean') {
                 r = true
             }
+            addToLogFile('Expected Response Received.\nThe API works.')
             return r
         })
         .catch(function (error) {
             // this means that there is something wrong with the API connection
             // console.log(error.message)
-            if (error) return false
+            if (error){
+                addToLogFile('Expected Response was not Received.\nThere may be some issue with the API or the network.')
+                return false
+            } 
         })
     return res
 }
@@ -391,5 +408,7 @@ module.exports = {
     getTransactionConfirmations,
     getUtxosForMnemonic,
     getbalanceForAddresses,
-    checkAPIStatus
+    checkAPIStatus,
+    writeToLogFile,
+    addToLogFile
 }

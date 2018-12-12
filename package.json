@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/ankitfa/fabcoinjs_examples#readme",
   "dependencies": {
-    "fabcoinjs": "^1.0.1"
+    "fabcoinjs": "^1.0.1",
+    "fs": "0.0.1-security"
   }
 }
