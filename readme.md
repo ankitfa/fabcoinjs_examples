@@ -12,11 +12,8 @@ The examples can then be executed simply by using the node command i.e. `node ex
 ## Available Examples
 Following examples are currently avilable. We will continue to add more examples. If you have a specific request, feel free to open an issue.
 
-{|
-!Example File
-!Description
-|-
+|Example File|Description|
+|:----------:|:-----------|
 |[checkApiStatus.js](examples/checkApiStatus.js)
 |To check if the API is currently working as expected or not.
-|-
-|}
+|
