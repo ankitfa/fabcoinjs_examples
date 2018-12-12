@@ -16,6 +16,7 @@ Following examples are currently avilable. We will continue to add more examples
 !Example File
 !Description
 |-
-|[checkApiStatus.js](examples/checkapistatus.js)
+|[checkApiStatus.js](examples/checkApiStatus.js)
 |To check if the API is currently working as expected or not.
+|-
 |}
