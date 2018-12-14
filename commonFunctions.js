@@ -114,19 +114,26 @@ var getBalanceForMnemonics = async function (mnemonics, apiEndPoint) {
     utxos.forEach((utxo) => {
         value += utxo.value
     })
+
+    addToLogFile('Fabcoin Balance for the given mnemonics : '+value.toFixed(8))
+    addToLogFile('-'.repeat(50))
+
     return value.toFixed(8);
 
 }
 
 var getUtxosForMnemonic = async function (mnemonics,apiEndPoint) {
 
+    writeToLogFile('')
     let ApiEndPoint = (apiEndPoint) ? apiEndPoint : myApiEndPoint
     let myUtxo = []
     let mn = bip39.mnemonicToSeed(mnemonics)
+    addToLogFile('Seed generated from mnemonics.')
     mnemonics = '************************************************************************'
     let internalHDNode = bip32.fromSeed(mn, networks.fabcoin).derivePath('m/44/0\'/0\'/0')
     let externalHDNode = bip32.fromSeed(mn, networks.fabcoin).derivePath('m/44/0\'/0\'/1')
     mn = '********************************************************************************'
+    addToLogFile('Internal and External Nodes generated from seed.')
     // 10th address - every 10th subsequent address until false is returned and when false is returned, 10 after to make sure no more addresses have been used
     let internalAddressIndex = 0
     let internalAddressUnusedCount = 0
@@ -142,6 +149,8 @@ var getUtxosForMnemonic = async function (mnemonics,apiEndPoint) {
             let ad = internalHDNode.derive(internalAddressIndex)
             let address = payments.p2pkh({ pubkey: ad.publicKey, network: networks.fabcoin }).address
             // console.log(address)
+            let isused = await isAddressUsed(address)
+            addToLogFile('Testing Address (Internal Node, Address Index = '+internalAddressIndex +') : '+address+ ((isused) ? ' address exists ' : ' address does not exist '))
             addressArray.push({ address: address, index: internalAddressIndex })
             internalAddressIndex++;
 
@@ -190,6 +199,8 @@ var getUtxosForMnemonic = async function (mnemonics,apiEndPoint) {
             for (let k = 0; k < 10; k++) { //At least 10 unused addresses must be found
                 let ad = internalHDNode.derive(internalAddressIndex + k)
                 let address = payments.p2pkh({ pubkey: ad.publicKey, network: networks.fabcoin }).address
+                let isused  = await isAddressUsed(address)
+                addToLogFile('Testing Address (Internal Node, Address Index = '+(internalAddressIndex + k)+') : '+address + ((isused) ? ' address exists ' : ' address does not exist '))
                 if (!(await isAddressUsed(address))) {
                     replaceConsoleMessage("Checking address " + (internalAddressIndex + k) + " in the internal Chain." + ('.'.repeat(k)))
                     internalAddressUnusedCount++
@@ -202,6 +213,7 @@ var getUtxosForMnemonic = async function (mnemonics,apiEndPoint) {
     }
 
     console.log("\nInternal Chain crawling complete for the given mnemonics.")
+    addToLogFile('Internal Chain crawling complete for the given mnemonics.')
 
     while (externalAddressUnusedCount < 10) {
 
@@ -211,6 +223,9 @@ var getUtxosForMnemonic = async function (mnemonics,apiEndPoint) {
             let ad = externalHDNode.derive(externalAddressIndex)
             let address = payments.p2pkh({ pubkey: ad.publicKey, network: networks.fabcoin }).address
             // console.log(address)
+            let isused = await isAddressUsed(address)
+            addToLogFile('Testing Address (External Node, Address Index = '+externalAddressIndex +') : '+address+ ((isused) ? ' address exists ' : ' address does not exist '))
+            
             addressArray.push({ address: address, index: externalAddressIndex })
             externalAddressIndex++;
 
@@ -266,6 +281,9 @@ var getUtxosForMnemonic = async function (mnemonics,apiEndPoint) {
             for (let k = 0; k < 10; k++) { //At least 10 unused addresses must be found
                 let ad = externalHDNode.derive(externalAddressIndex + k)
                 let address = payments.p2pkh({ pubkey: ad.publicKey, network: networks.fabcoin }).address
+                let isused = await isAddressUsed(address)
+                addToLogFile('Testing Address (External Node, Address Index = '+(externalAddressIndex + k )+') : '+address+ ((isused) ? ' address exists ' : ' address does not exist '))
+            
                 if (!(await isAddressUsed(address))) {
                     replaceConsoleMessage("Checking address " + (externalAddressIndex + k) + " in the external Chain." + ('.'.repeat(k)))
                     externalAddressUnusedCount++
@@ -277,6 +295,19 @@ var getUtxosForMnemonic = async function (mnemonics,apiEndPoint) {
         }
     }
     console.log("\nExternal Chain crawling complete for the given mnemonics.")
+    console.log("External Chain crawling complete for the given mnemonics.")
+
+    addToLogFile('-'.repeat(50))
+    addToLogFile((myUtxo.length > 0) ? 'Following UTXOs were found for the given mnemonics.' : 'No UTXOs were found for the given mnemonics.')
+    addToLogFile('-'.repeat(50))
+
+    for(let i = 0; i < myUtxo.length; i++){
+        addToLogFile("Address : " +myUtxo[i].address+ 
+        '\nChain Type : '+myUtxo[i].chainType+'\nAddress Index : '+
+        myUtxo[i].addressIndex+'\nValue : '+myUtxo[i].value+'\nTransaction ID : '+
+        myUtxo[i].txid +'\n'+ '-'.repeat(50))
+    }
+    //addToLogFile(JSON.stringify(myUtxo))
 
     return myUtxo;
 }
@@ -331,6 +362,8 @@ var isAddressUsed = async function (address) {
     }).catch (e => {
         return e
     })
+
+   // await wait(100)
  
     return r
 }
@@ -400,6 +433,12 @@ var buildTransactionByUTXOs = async function (utxos, keypairs, receiveAddressAnd
 
 }
 
+var wait = (ms) => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
+
 module.exports = {
     getAddress,
     getBalanceForMnemonics,
@@ -410,5 +449,7 @@ module.exports = {
     getbalanceForAddresses,
     checkAPIStatus,
     writeToLogFile,
-    addToLogFile
+    addToLogFile,
+    isAddressUsed,
+    wait
 }
