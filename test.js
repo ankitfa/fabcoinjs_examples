@@ -22,8 +22,8 @@ const apiCallContract = ":9001/fabapi/callcontract"
 const apiBlockchainInfo = ":9001/fabapi/getblockchaininfo"
 const apiGetTokenList = ":9001/fabapi/gettokenlist"
 
-
 async function getTxApiTest() {
+
     let totalCalls = 0;
     let droppedCalls = 0;
     for(let i =0 ;i < 10; i++){
