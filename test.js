@@ -105,7 +105,7 @@ async function existAddressApiTest() {
         else addressNotPresentCount = 0
     }
 
-    console.log("Interval between Calls : " + interval + "\nDropped Calls : " + droppedCalls+"\nTotal Calls : "+totalCalls)
+    console.log("Interval between Calls : " + interval + "\nDropped Calls :  " + droppedCalls+"\nTotal Calls : "+totalCalls)
 }
 
 getTxApiTest()
