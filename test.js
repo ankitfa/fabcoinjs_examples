@@ -29,17 +29,17 @@ async function getTxApiTest() {
     for(let i =0 ;i < 10; i++){
         for(j = 0; j < apiEndPoints.length ; j++){
              let utxo = await axios.default.get(apiEndPoints[j] + 
-                apiUtxo+'address=15R8RLig2dD7JFfJcZfqEnr3Fbe79TtUfM' ).then(res=>{
-                    console.dir("API : "+apiEndPoints[j] + "    Response : "+res.data.status)
+                apiGetTx+'7425990ed0ed45f4cb123e72f22a09d3c08aa638af4871795f881cca959759ee/true' ).then(res=>{
+                    console.dir("API : "+apiEndPoints[j] + "    Response : "+res.data.confirmations)
                     totalCalls++
              }).catch (e => {
-                 console.log(e)
+                 console.log("Error : " + e)
                  droppedCalls++
 
              })
         }
     }
-    console.log("\nUTXO API\nTotal Calls : "+totalCalls+"\nDropped Calls : "+droppedCalls)
+    console.log("\nGet Raw Transaction API\nTotal Calls : "+totalCalls+"\nDropped Calls : "+droppedCalls)
 }
 
 
@@ -108,3 +108,4 @@ async function existAddressApiTest() {
     console.log("Interval between Calls : " + interval + "\nDropped Calls : " + droppedCalls+"\nTotal Calls : "+totalCalls)
 }
 
+getTxApiTest()
