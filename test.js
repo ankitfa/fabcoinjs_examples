@@ -1,20 +1,78 @@
 const func = require('./commonFunctions')
 const fs = require('fs')
-
+const axios = require('axios')
 let mn = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong'
 
-//get address in the change and receive chain and check for existance. 
+const apiEndPoints = [  "http://fabexplorer.info",
+                       "http://fabexplorer.com",
+                       "http://api.fabcoin.biz",
+                       "http://api1.fabcoin.club",
+                       "http://api2.fabcoin.club",
+                       "http://api3.fabcoin.club",
+                       "http://api1.fabexplorer.net",
+                       "http://api2.fabexplorer.net",
+                       "http://api3.fabexplorer.net"   ]
 
-async function test() {
+
+const apiSendTx = ":9001/fabapi/sendrawtransaction/"
+const apiGetTx = ":9001/fabapi/getrawtransaction/"
+const apiExistAddress = ":9001/fabapi/existaddress/"
+const apiUtxo = ":8666/transactions?"
+const apiCallContract = ":9001/fabapi/callcontract"
+const apiBlockchainInfo = ":9001/fabapi/getblockchaininfo"
+const apiGetTokenList = ":9001/fabapi/gettokenlist"
+
+
+async function getTxApiTest() {
+    let totalCalls = 0;
+    let droppedCalls = 0;
+    for(let i =0 ;i < 10; i++){
+        for(j = 0; j < apiEndPoints.length ; j++){
+             let utxo = await axios.default.get(apiEndPoints[j] + 
+                apiUtxo+'address=15R8RLig2dD7JFfJcZfqEnr3Fbe79TtUfM' ).then(res=>{
+                    console.dir("API : "+apiEndPoints[j] + "    Response : "+res.data.status)
+                    totalCalls++
+             }).catch (e => {
+                 console.log(e)
+                 droppedCalls++
+
+             })
+        }
+    }
+    console.log("\nUTXO API\nTotal Calls : "+totalCalls+"\nDropped Calls : "+droppedCalls)
+}
+
+
+async function utxoApiTest() {
+    let totalCalls = 0;
+    let droppedCalls = 0;
+    for(let i =0 ;i < 10; i++){
+        for(j = 0; j < apiEndPoints.length ; j++){
+             let utxo = await axios.default.get(apiEndPoints[j] + 
+                apiUtxo+'address=15R8RLig2dD7JFfJcZfqEnr3Fbe79TtUfM' ).then(res=>{
+                    console.dir("API : "+apiEndPoints[j] + "    Response : "+res.data.status)
+                    totalCalls++
+             }).catch (e => {
+                 console.log(e)
+                 droppedCalls++
+
+             })
+        }
+    }
+
+    console.log("\nUTXO API\nTotal Calls : "+totalCalls+"\nDropped Calls : "+droppedCalls)
+}
+
+async function existAddressApiTest() {
     
     // do it for change/internal address
     let idx = 0
     let addressNotPresentCount = 0;
     let topBuffer = 10
-    let interval = 3000 //interval between API calls so as to avoid flooding the API endpoint with requests
+    let interval =  0//interval between API calls so as to avoid flooding the API endpoint with requests
     let droppedCalls = 0;
     let totalCalls = 0;
-    let limiter = 500;
+    let limiter = Infinity 
     func.writeToLogFile('')
     while(addressNotPresentCount < topBuffer && idx < limiter) {
         let address = func.getAddress(mn,0,1,idx);
@@ -50,4 +108,3 @@ async function test() {
     console.log("Interval between Calls : " + interval + "\nDropped Calls : " + droppedCalls+"\nTotal Calls : "+totalCalls)
 }
 
-test()
